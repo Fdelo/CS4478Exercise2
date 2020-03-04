@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Shapedrawer : MonoBehaviour
-{
-  
-  
+{  
   SpriteRenderer sr;
-  int NumEdges = 24;
+  EdgeCollider2D ec;
+  int NumEdges = 48;
   float RadiusOne = 1f;
-  float RadiusTwo = 0.9f;
+  float RadiusTwo = 0.95f;
 
   Vector2[] vertices;
+  Vector2[] collider_points;
   ushort[] triangles;
   private void Awake() {
     sr = GetComponent<SpriteRenderer>();
-  
+    ec = GetComponentInParent<EdgeCollider2D>();
+    
   }
   void Start()
   {     
@@ -27,7 +28,7 @@ public class Shapedrawer : MonoBehaviour
   void DefinePoints()
   {
     vertices = new Vector2[NumEdges+2];
-
+    collider_points = new Vector2[(NumEdges+2)/2];
     int i = 0;      
     do
     {
@@ -40,8 +41,8 @@ public class Shapedrawer : MonoBehaviour
 
       vertices[i*2] = new Vector2(x_one, y_one);
       vertices[i*2 + 1] = new Vector2(x_two, y_two);
-      i++;
-      
+      collider_points[i] = new Vector2(x_two - 1, y_two - 1);
+      i++;    
     } while ((2 * Mathf.PI * i / NumEdges) + Mathf.PI <= 2 *  Mathf.PI && (2 * Mathf.PI * i / NumEdges) + Mathf.PI >= Mathf.PI);
 
     //points[NumEdges] = points[0];
@@ -64,40 +65,39 @@ public class Shapedrawer : MonoBehaviour
   {
     if(sr == null)
       return;
-
-      // GameObject polygon = new GameObject(); //create a new game object
       
-      Texture2D texture = new Texture2D(3, 3); // create a texture larger than your maximum polygon size
+    Texture2D texture = new Texture2D(3, 3); // create a texture larger than your maximum polygon size
 
-      // create an array and fill the texture with your color
-      // List<Color> cols = new List<Color>(); 
-      // for (int i = 0; i < (texture.width * texture.height); i++)
-      //   cols.Add(color);
-      // texture.SetPixels(cols.ToArray());
-      // texture.Apply();
+    // create an array and fill the texture with your color
+    // List<Color> cols = new List<Color>(); 
+    // for (int i = 0; i < (texture.width * texture.height); i++)
+    //   cols.Add(color);
+    // texture.SetPixels(cols.ToArray());
+    // texture.Apply();
 
-      // sr.color = color; //you can also add that color to the sprite renderer
+    // sr.color = color; //you can also add that color to the sprite renderer
 
-      sr.sprite = Sprite.Create(texture, new Rect(0,0, 2, 2), Vector2.zero, 1); //create a sprite with the texture we just created and colored in
+    sr.sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.zero, 1); //create a sprite with the texture we just created and colored in
+    
+    
+    // convert coordinates to local space
+    float lx = Mathf.Infinity, ly = Mathf.Infinity;
+    foreach (Vector2 vi in vertices)
+    {
+        if (vi.x < lx)
+            lx = vi.x;
+        if (vi.y < ly)
+            ly = vi.y;
+    }
+    Vector2[] localv = new Vector2[vertices.Length];
+    for (int i = 0; i < vertices.Length; i++)
+    {
+        localv[i] = vertices[i] - new Vector2(lx, ly);
+    }
 
-      // convert coordinates to local space
-      float lx = Mathf.Infinity, ly = Mathf.Infinity;
-      foreach (Vector2 vi in vertices)
-      {
-          if (vi.x < lx)
-              lx = vi.x;
-          if (vi.y < ly)
-              ly = vi.y;
-      }
-      Vector2[] localv = new Vector2[vertices.Length];
-      for (int i = 0; i < vertices.Length; i++)
-      {
-          localv[i] = vertices[i] - new Vector2(lx, ly);
-      }
-
-      sr.sprite.OverrideGeometry(vertices, triangles); // set the vertices and triangles
-
-      // polygon.transform.position = (Vector2)transform.InverseTransformPoint(transform.position); // return to world space
+    sr.sprite.OverrideGeometry(vertices, triangles); // set the vertices and triangles
+    
+    ec.points = collider_points;
   }
 
 }

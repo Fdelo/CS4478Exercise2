@@ -1,15 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class playermovement : MonoBehaviour
 {
     private Rigidbody2D rb2D;
+    private EdgeCollider2D ec;
+    private SpriteRenderer sr;
     private float revSpeed = 50.0f;
 
     void Awake()
     {
-        rb2D = GetComponent<Rigidbody2D>();
+      rb2D = GetComponent<Rigidbody2D>();
+      sr = GetComponentInChildren<SpriteRenderer>();
+      ec = GetComponent<EdgeCollider2D>();
     }
 
     void Start()
@@ -29,6 +34,30 @@ public class playermovement : MonoBehaviour
       {
         rb2D.MoveRotation(rb2D.rotation + revSpeed * Time.fixedDeltaTime);  
       }
-        
+                
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+
+      int newVertArrLen = (sr.sprite.vertices.Length-8);
+      int newNumEdges = (sr.sprite.triangles.Length-24);
+
+      IEnumerable<Vector2> updateVert = sr.sprite.vertices.Skip(4).Take(newVertArrLen);
+      
+      ushort[] updateTri = new ushort[newNumEdges];
+
+      int j = 0;
+      for (int i = 0; i < newVertArrLen-2; i += 2){
+        updateTri[j] = (ushort)i;
+        updateTri[j+1] = (ushort)(i + 1); 
+        updateTri[j+2] = (ushort)(i + 2);
+        updateTri[j+3] = (ushort)(i + 1);
+        updateTri[j+4] = (ushort)(i + 3);
+        updateTri[j+5] = (ushort)(i + 2);
+        j += 6;
+      }
+
+      sr.sprite.OverrideGeometry(updateVert.ToArray(),updateTri);
+
     }
 }

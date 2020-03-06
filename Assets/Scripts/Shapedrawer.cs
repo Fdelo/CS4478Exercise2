@@ -29,7 +29,8 @@ public class Shapedrawer : MonoBehaviour
   {
     vertices = new Vector2[NumEdges+2];
     collider_points = new Vector2[(NumEdges+2)/2];
-    int i = 0;      
+    int i = 0;    
+
     do
     {
       float angle = (2 * Mathf.PI * i / NumEdges) + Mathf.PI;
@@ -44,8 +45,6 @@ public class Shapedrawer : MonoBehaviour
       collider_points[i] = new Vector2(x_two - 1, y_two - 1);
       i++;    
     } while ((2 * Mathf.PI * i / NumEdges) + Mathf.PI <= 2 *  Mathf.PI && (2 * Mathf.PI * i / NumEdges) + Mathf.PI >= Mathf.PI);
-
-    //points[NumEdges] = points[0];
     
     int j = 0;
     triangles = new ushort[NumEdges*3];
@@ -99,5 +98,5 @@ public class Shapedrawer : MonoBehaviour
     
     ec.points = collider_points;
   }
-
+  
 }

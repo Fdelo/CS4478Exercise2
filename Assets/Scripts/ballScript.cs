@@ -18,7 +18,9 @@ public class ballScript : MonoBehaviour
         rb2D.gravityScale = 0.0f;
     }
 
-    private void OnCollisionEnter2D(Collision2D other) {
+    private void OnCollisionEnter2D(Collision2D other) 
+    {
+      Vector2 test = other.GetContact(0).point;
       
       velocity.y = velocity.y * -1;
     }

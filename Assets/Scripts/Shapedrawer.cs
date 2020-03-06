@@ -21,7 +21,7 @@ public class Shapedrawer : MonoBehaviour
   void Start()
   {     
     DefinePoints();
-    DrawPolygon2D(vertices, triangles, Color.red);      
+    DrawPolygon2D(vertices, triangles, Color.blue);      
   }
 
 
@@ -68,13 +68,13 @@ public class Shapedrawer : MonoBehaviour
     Texture2D texture = new Texture2D(3, 3); // create a texture larger than your maximum polygon size
 
     // create an array and fill the texture with your color
-    // List<Color> cols = new List<Color>(); 
-    // for (int i = 0; i < (texture.width * texture.height); i++)
-    //   cols.Add(color);
-    // texture.SetPixels(cols.ToArray());
-    // texture.Apply();
+    List<Color> cols = new List<Color>(); 
+    for (int i = 0; i < (texture.width * texture.height); i++)
+      cols.Add(color);
+    texture.SetPixels(cols.ToArray());
+    texture.Apply();
 
-    // sr.color = color; //you can also add that color to the sprite renderer
+    sr.color = color; //you can also add that color to the sprite renderer
 
     sr.sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.zero, 1); //create a sprite with the texture we just created and colored in
     
